@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:open_rooms/project/routes/app_route_constants.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -19,9 +17,9 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: const Center(
-          child: Text(
+        backgroundColor: Colors.pink,
+        title: Center(
+          child: const Text(
             "Inicio",
             style: TextStyle(
               color: Colors.white,

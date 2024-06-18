@@ -4,12 +4,14 @@ import 'package:open_rooms/project/pages/calendar.dart';
 import 'package:open_rooms/project/pages/door.dart';
 import 'package:open_rooms/project/pages/error.dart';
 import 'package:open_rooms/project/pages/home.dart';
-import 'package:open_rooms/project/pages/login.dart';
 import 'package:open_rooms/project/pages/profile.dart';
 import 'package:open_rooms/project/routes/app_route_constants.dart';
 
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
+
 final GoRouter router = GoRouter(
   initialLocation: "/",
+  navigatorKey: _rootNavigatorKey,
   routes: [
     GoRoute(
       path: "/",
@@ -17,16 +19,19 @@ final GoRouter router = GoRouter(
       builder: (context, state) => Home(),
       routes: [
         GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
           path: MyAppRouteConstants.profileRouteName,
           name: MyAppRouteConstants.profileRouteName,
           builder: (context, state) => Profile(),
         ),
         GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
           path: MyAppRouteConstants.doorRouteName,
           name: MyAppRouteConstants.doorRouteName,
           builder: (context, state) => Door(),
         ),
         GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
           path: MyAppRouteConstants.calendarRouteName,
           name: MyAppRouteConstants.calendarRouteName,
           builder: (context, state) => Calendar(),

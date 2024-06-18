@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:open_rooms/project/pages/login.dart';
 import 'package:open_rooms/project/routes/app_route_config.dart';
 import 'firebase_options.dart';
@@ -8,6 +9,12 @@ import 'firebase_options.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.black,
+    ),
+  );
   runApp(const MyApp());
 }
 
@@ -23,7 +30,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AuthStateScreen extends StatelessWidget {
+class AuthStateScreen extends StatefulWidget {
+  @override
+  _AuthStateScreenState createState() => _AuthStateScreenState();
+}
+
+class _AuthStateScreenState extends State<AuthStateScreen> {
+  int selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,10 +64,12 @@ class AuthStateScreen extends StatelessWidget {
               ),
             );
           } else if (snapshot.hasData && snapshot.data != null) {
-            return MaterialApp.router(
-              title: "Open Rooms",
-              routerConfig: router,
-              debugShowCheckedModeBanner: false,
+            return Scaffold(
+              body: MaterialApp.router(
+                title: "Open Rooms",
+                routerConfig: router,
+                debugShowCheckedModeBanner: false,
+              ),
             );
           } else {
             return Scaffold(
