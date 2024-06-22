@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -18,13 +19,35 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.pink,
-        title: Center(
-          child: const Text(
-            "Inicio",
-            style: TextStyle(
-              color: Colors.white,
+        elevation: 0,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              onPressed: () {
+                context.go("/calendar");
+              },
+              icon: const Icon(
+                Icons.calendar_today,
+                color: Colors.white,
+              ),
             ),
-          ),
+            const Text(
+              "Open Rooms",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                context.go("/profile");
+              },
+              icon: const Icon(
+                Icons.person,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
       ),
       body: Padding(
