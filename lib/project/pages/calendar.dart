@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:open_rooms/project/utils.dart';
+import 'package:open_rooms/project/widgets/custom_button.dart';
+import 'package:open_rooms/project/widgets/custom_text_field.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Calendar extends StatefulWidget {
@@ -11,9 +14,11 @@ class Calendar extends StatefulWidget {
 
 class _CalendarState extends State<Calendar> {
   late final ValueNotifier<List<Event>> _selectedEvents;
-  CalendarFormat _calendarFormat = CalendarFormat.month;
+  CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  late TimeOfDay _startTime;
+  late TimeOfDay _endTime;
 
   final TextEditingController _eventTitleController = TextEditingController();
   final TextEditingController _eventTeacherController = TextEditingController();
@@ -24,12 +29,14 @@ class _CalendarState extends State<Calendar> {
     super.initState();
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
-  }
-
-  @override
-  void dispose() {
-    _selectedEvents.dispose();
-    super.dispose();
+    _startTime = TimeOfDay(
+      hour: roundStartTime(_focusedDay).hour,
+      minute: roundStartTime(_focusedDay).minute,
+    );
+    _endTime = TimeOfDay(
+      hour: roundEndTime(_focusedDay).hour,
+      minute: roundEndTime(_focusedDay).minute,
+    );
   }
 
   List<Event> _getEventsForDay(DateTime day) {
@@ -41,6 +48,8 @@ class _CalendarState extends State<Calendar> {
       _eventTitleController.text,
       _eventTeacherController.text,
       _eventSubjectController.text,
+      _startTime,
+      _endTime,
     );
 
     if (kEvents[_selectedDay] != null) {
@@ -56,6 +65,302 @@ class _CalendarState extends State<Calendar> {
     _eventTitleController.clear();
     _eventTeacherController.clear();
     _eventSubjectController.clear();
+  }
+
+  void _handleReservation(BuildContext context) {
+    _addEvent();
+    Navigator.of(context).pop();
+    _selectedEvents.value = _getEventsForDay(_selectedDay!);
+  }
+
+  void _changeReservationStart(TimeOfDay value) {
+    setState(() {
+      _startTime = value;
+    });
+    print(value);
+  }
+
+  void _changeReservationEnd(TimeOfDay value) {
+    setState(() {
+      _endTime = value;
+    });
+    print(value);
+  }
+
+  void handleDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.black,
+          scrollable: true,
+          title: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Añadir reserva",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: CustomButton(
+                    title: "Cancelar",
+                    bg: Colors.red,
+                    fg: Colors.black,
+                    action: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+                const SizedBox(width: 15),
+                Expanded(
+                  flex: 1,
+                  child: CustomButton(
+                    title: "Reservar",
+                    bg: Colors.blue,
+                    fg: Colors.black,
+                    action: () {
+                      _handleReservation(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+          content: Column(
+            children: [
+              CustomTextField(
+                controller: _eventTitleController,
+                label: "Título",
+                icon: Icons.title,
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              CustomTextField(
+                controller: _eventTeacherController,
+                label: "Docente a cargo",
+                icon: Icons.co_present,
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              CustomTextField(
+                controller: _eventSubjectController,
+                label: "Asignatura",
+                icon: Icons.book,
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Inicio",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _startTime.format(context),
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.5),
+                        ),
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      TimeOfDay? newEventTime = await showTimePicker(
+                        context: context,
+                        initialTime: _startTime,
+                        builder: (context, child) {
+                          return Theme(
+                            data: ThemeData.light().copyWith(
+                              timePickerTheme: TimePickerThemeData(
+                                backgroundColor: Colors.black,
+                                hourMinuteColor: WidgetStateColor.resolveWith(
+                                  (states) =>
+                                      states.contains(WidgetState.selected)
+                                          ? Colors.blue
+                                          : Colors.blue.withOpacity(0.1),
+                                ),
+                                hourMinuteTextColor:
+                                    WidgetStateColor.resolveWith(
+                                  (states) =>
+                                      states.contains(WidgetState.selected)
+                                          ? Colors.black
+                                          : Colors.white,
+                                ),
+                                dayPeriodColor: WidgetStateColor.resolveWith(
+                                  (states) =>
+                                      states.contains(WidgetState.selected)
+                                          ? Colors.blue
+                                          : Colors.blue.withOpacity(0.1),
+                                ),
+                                dayPeriodBorderSide: BorderSide(width: 0),
+                                dayPeriodTextColor:
+                                    WidgetStateColor.resolveWith(
+                                  (states) =>
+                                      states.contains(WidgetState.selected)
+                                          ? Colors.black
+                                          : Colors.white,
+                                ),
+                                entryModeIconColor: Colors.blue,
+                                dialBackgroundColor:
+                                    Colors.blue.withOpacity(0.1),
+                                dialHandColor: Colors.blue,
+                                dialTextColor: WidgetStateColor.resolveWith(
+                                  (states) =>
+                                      states.contains(WidgetState.selected)
+                                          ? Colors.black
+                                          : Colors.white,
+                                ),
+                              ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: ButtonStyle(
+                                  backgroundColor: WidgetStateColor.resolveWith(
+                                    (states) => Colors.blue,
+                                  ),
+                                  foregroundColor: WidgetStateColor.resolveWith(
+                                    (states) => Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            child: child ?? Container(),
+                          );
+                        },
+                      );
+                      if (newEventTime != null) {
+                        _changeReservationStart(newEventTime);
+                        //RECURSION GOOOOOOOOOOOOOOOOOOOD
+                        Navigator.of(context).pop();
+                        handleDialog();
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.edit,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Final",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _endTime.format(context),
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.5),
+                        ),
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      TimeOfDay? newEventTime = await showTimePicker(
+                        context: context,
+                        initialTime: _endTime,
+                        builder: (context, child) {
+                          return Theme(
+                            data: ThemeData.light().copyWith(
+                              timePickerTheme: TimePickerThemeData(
+                                backgroundColor: Colors.black,
+                                hourMinuteColor: WidgetStateColor.resolveWith(
+                                  (states) =>
+                                      states.contains(WidgetState.selected)
+                                          ? Colors.blue
+                                          : Colors.blue.withOpacity(0.1),
+                                ),
+                                hourMinuteTextColor:
+                                    WidgetStateColor.resolveWith(
+                                  (states) =>
+                                      states.contains(WidgetState.selected)
+                                          ? Colors.black
+                                          : Colors.white,
+                                ),
+                                dayPeriodColor: WidgetStateColor.resolveWith(
+                                  (states) =>
+                                      states.contains(WidgetState.selected)
+                                          ? Colors.blue
+                                          : Colors.blue.withOpacity(0.1),
+                                ),
+                                dayPeriodBorderSide: BorderSide(width: 0),
+                                dayPeriodTextColor:
+                                    WidgetStateColor.resolveWith(
+                                  (states) =>
+                                      states.contains(WidgetState.selected)
+                                          ? Colors.black
+                                          : Colors.white,
+                                ),
+                                entryModeIconColor: Colors.blue,
+                                dialBackgroundColor:
+                                    Colors.blue.withOpacity(0.1),
+                                dialHandColor: Colors.blue,
+                                dialTextColor: WidgetStateColor.resolveWith(
+                                  (states) =>
+                                      states.contains(WidgetState.selected)
+                                          ? Colors.black
+                                          : Colors.white,
+                                ),
+                              ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: ButtonStyle(
+                                  backgroundColor: WidgetStateColor.resolveWith(
+                                    (states) => Colors.blue,
+                                  ),
+                                  foregroundColor: WidgetStateColor.resolveWith(
+                                    (states) => Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            child: child ?? Container(),
+                          );
+                        },
+                      );
+                      if (newEventTime != null) {
+                        _changeReservationEnd(newEventTime);
+                        //RECURSION GOOOOOOOOOOOOOOOOOOOD
+                        Navigator.of(context).pop();
+                        handleDialog();
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.edit,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -77,66 +382,7 @@ class _CalendarState extends State<Calendar> {
       backgroundColor: Colors.black,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue.shade200,
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                scrollable: true,
-                title: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Añadir reserva"),
-                  ],
-                ),
-                actions: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _addEvent();
-                        Navigator.of(context).pop();
-                        _selectedEvents.value = _getEventsForDay(_selectedDay!);
-                      },
-                      child: const Text("Añadir"),
-                    ),
-                  ),
-                ],
-                content: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: _eventTitleController,
-                        decoration: const InputDecoration(
-                          hintText: "Título de la clase",
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10.0,
-                      ),
-                      TextField(
-                        controller: _eventTeacherController,
-                        decoration: const InputDecoration(
-                          hintText: "Docente a cargo",
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10.0,
-                      ),
-                      TextField(
-                        controller: _eventSubjectController,
-                        decoration: const InputDecoration(
-                          hintText: "Asignatura",
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
+        onPressed: handleDialog,
         child: const Icon(
           Icons.add,
         ),
@@ -251,7 +497,7 @@ class _CalendarState extends State<Calendar> {
                         ),
                         child: ListTile(
                           // ignore: avoid_print
-                          onTap: () => print("${value[index]}"),
+                          onTap: () => print(kEvents),
                           title: Text(
                             "${value[index]}",
                             style: const TextStyle(

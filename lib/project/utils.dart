@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'dart:collection';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 /// Example event class.
@@ -9,11 +11,13 @@ class Event {
   final String title;
   final String teacher;
   final String subject;
+  final TimeOfDay start;
+  final TimeOfDay end;
 
-  const Event(this.title, this.teacher, this.subject);
+  const Event(this.title, this.teacher, this.subject, this.start, this.end);
 
   @override
-  String toString() => "$title por $teacher de la asignatura de $subject";
+  toString() => "$title por $teacher de la asignatura de $subject";
 }
 
 /// Example events.
@@ -40,3 +44,28 @@ List<DateTime> daysInRange(DateTime first, DateTime last) {
 final kToday = DateTime.now();
 final kFirstDay = DateTime(kToday.year, kToday.month - 3, kToday.day);
 final kLastDay = DateTime(kToday.year, kToday.month + 3, kToday.day);
+
+DateTime roundStartTime(DateTime dateTime) {
+  int roundedHours = dateTime.minute >= 30 ? dateTime.hour + 1 : dateTime.hour;
+
+  return DateTime(
+    dateTime.year,
+    dateTime.month,
+    dateTime.day,
+    roundedHours,
+    0,
+  );
+}
+
+DateTime roundEndTime(DateTime dateTime) {
+  int adjustedHours = dateTime.hour + 2;
+  int roundedHours = dateTime.minute >= 30 ? adjustedHours + 1 : adjustedHours;
+
+  return DateTime(
+    dateTime.year,
+    dateTime.month,
+    dateTime.day,
+    roundedHours,
+    0,
+  );
+}
