@@ -14,6 +14,47 @@ class _CalendarState extends State<Calendar> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
+  Map<DateTime, List<CalendarEvent>> events = {};
+
+  final TextEditingController _eventTitleController = TextEditingController();
+  final TextEditingController _eventTeacherController = TextEditingController();
+  final TextEditingController _eventSubjectController = TextEditingController();
+
+  late final ValueNotifier<List<CalendarEvent>> _selectedEvents;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDay = _focusedDay;
+    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+  }
+
+  List<CalendarEvent> _getEventsForDay(DateTime day) {
+    return events[day] ?? [];
+  }
+
+  void _addEvent() {
+    final newEvent = CalendarEvent(
+      _eventTitleController.text,
+      _eventTeacherController.text,
+      _eventSubjectController.text,
+    );
+
+    if (events[_selectedDay] != null) {
+      events[_selectedDay]!.add(newEvent);
+    } else {
+      events[_selectedDay!] = [newEvent];
+    }
+
+    setState(() {
+      _selectedEvents.value = _getEventsForDay(_selectedDay!);
+    });
+
+    _eventTitleController.clear();
+    _eventTeacherController.clear();
+    _eventSubjectController.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,9 +66,74 @@ class _CalendarState extends State<Calendar> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
-              "Calendario",
+              "Reservas",
             ),
           ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                scrollable: true,
+                title: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Añadir reserva"),
+                  ],
+                ),
+                actions: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _addEvent();
+                        Navigator.of(context).pop();
+                        _selectedEvents.value = _getEventsForDay(_selectedDay!);
+                      },
+                      child: const Text("Añadir"),
+                    ),
+                  ),
+                ],
+                content: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: _eventTitleController,
+                        decoration: const InputDecoration(
+                          hintText: "Título de la clase",
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      TextField(
+                        controller: _eventTeacherController,
+                        decoration: const InputDecoration(
+                          hintText: "Docente a cargo",
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      TextField(
+                        controller: _eventSubjectController,
+                        decoration: const InputDecoration(
+                          hintText: "Asignatura",
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+        child: const Icon(
+          Icons.add,
         ),
       ),
       body: Padding(
@@ -41,7 +147,9 @@ class _CalendarState extends State<Calendar> {
               focusedDay: _focusedDay,
               startingDayOfWeek: StartingDayOfWeek.monday,
               calendarFormat: _calendarFormat,
+              eventLoader: _getEventsForDay,
               calendarStyle: const CalendarStyle(
+                outsideDaysVisible: false,
                 selectedDecoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.purple,
@@ -59,6 +167,7 @@ class _CalendarState extends State<Calendar> {
                   setState(() {
                     _selectedDay = selectedDay;
                     _focusedDay = focusedDay;
+                    _selectedEvents.value = _getEventsForDay(selectedDay);
                   });
                 }
               },
@@ -73,6 +182,35 @@ class _CalendarState extends State<Calendar> {
                 _focusedDay = focusedDay;
               },
             ),
+            const SizedBox(height: 10.0),
+            Expanded(
+              child: ValueListenableBuilder<List<CalendarEvent>>(
+                valueListenable: _selectedEvents,
+                builder: (context, value, _) {
+                  return ListView.builder(
+                    itemCount: value.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ListTile(
+                          onTap: () => print(""),
+                          title: Text(
+                            "${value[index].title}",
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            )
           ],
         ),
       ),

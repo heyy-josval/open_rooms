@@ -8,7 +8,9 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -23,7 +25,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: AuthStateScreen(),
     );
@@ -31,7 +33,10 @@ class MyApp extends StatelessWidget {
 }
 
 class AuthStateScreen extends StatefulWidget {
+  const AuthStateScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _AuthStateScreenState createState() => _AuthStateScreenState();
 }
 
@@ -57,7 +62,9 @@ class _AuthStateScreenState extends State<AuthStateScreen> {
                     SizedBox(height: 20),
                     Text(
                       "Cargando...",
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
                     ),
                   ],
                 ),
@@ -72,7 +79,8 @@ class _AuthStateScreenState extends State<AuthStateScreen> {
               ),
             );
           } else {
-            return Scaffold(
+            return const Scaffold(
+              backgroundColor: Colors.black,
               body: Login(),
             );
           }
