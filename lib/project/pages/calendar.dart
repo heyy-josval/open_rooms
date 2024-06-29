@@ -142,7 +142,7 @@ class _CalendarState extends State<Calendar> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
           children: [
             TableCalendar(
