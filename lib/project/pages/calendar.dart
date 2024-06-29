@@ -10,17 +10,14 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
+  late final ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
-  Map<DateTime, List<CalendarEvent>> events = {};
-
   final TextEditingController _eventTitleController = TextEditingController();
   final TextEditingController _eventTeacherController = TextEditingController();
   final TextEditingController _eventSubjectController = TextEditingController();
-
-  late final ValueNotifier<List<CalendarEvent>> _selectedEvents;
 
   @override
   void initState() {
@@ -29,21 +26,27 @@ class _CalendarState extends State<Calendar> {
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
   }
 
-  List<CalendarEvent> _getEventsForDay(DateTime day) {
-    return events[day] ?? [];
+  @override
+  void dispose() {
+    _selectedEvents.dispose();
+    super.dispose();
+  }
+
+  List<Event> _getEventsForDay(DateTime day) {
+    return kEvents[day] ?? [];
   }
 
   void _addEvent() {
-    final newEvent = CalendarEvent(
+    final newEvent = Event(
       _eventTitleController.text,
       _eventTeacherController.text,
       _eventSubjectController.text,
     );
 
-    if (events[_selectedDay] != null) {
-      events[_selectedDay]!.add(newEvent);
+    if (kEvents[_selectedDay] != null) {
+      kEvents[_selectedDay]!.add(newEvent);
     } else {
-      events[_selectedDay!] = [newEvent];
+      kEvents[_selectedDay!] = [newEvent];
     }
 
     setState(() {
@@ -59,7 +62,7 @@ class _CalendarState extends State<Calendar> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         elevation: 0,
         title: const Row(
@@ -71,7 +74,9 @@ class _CalendarState extends State<Calendar> {
           ],
         ),
       ),
+      backgroundColor: Colors.black,
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blue.shade200,
         onPressed: () {
           showDialog(
             context: context,
@@ -141,6 +146,27 @@ class _CalendarState extends State<Calendar> {
         child: Column(
           children: [
             TableCalendar(
+              headerStyle: HeaderStyle(
+                rightChevronIcon: const Icon(
+                  Icons.chevron_right,
+                  color: Colors.white,
+                ),
+                leftChevronIcon: const Icon(
+                  Icons.chevron_left,
+                  color: Colors.white,
+                ),
+                titleTextStyle: const TextStyle(
+                  color: Colors.white,
+                ),
+                formatButtonTextStyle: const TextStyle(
+                  color: Color.fromRGBO(255, 255, 255, 1),
+                ),
+                formatButtonDecoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(10.0),
+                  color: Colors.blue.withOpacity(0.2),
+                ),
+              ),
               locale: 'en_US',
               firstDay: kFirstDay,
               lastDay: kLastDay,
@@ -148,15 +174,38 @@ class _CalendarState extends State<Calendar> {
               startingDayOfWeek: StartingDayOfWeek.monday,
               calendarFormat: _calendarFormat,
               eventLoader: _getEventsForDay,
-              calendarStyle: const CalendarStyle(
+              calendarBuilders: CalendarBuilders(
+                singleMarkerBuilder: (context, date, _) {
+                  return Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
+                    width: 4.0,
+                    height: 4.0,
+                    margin: const EdgeInsets.symmetric(horizontal: 1),
+                  );
+                },
+              ),
+              calendarStyle: CalendarStyle(
+                todayTextStyle: const TextStyle(color: Colors.white),
+                defaultTextStyle: TextStyle(
+                  color: Colors.white.withOpacity(0.3),
+                ),
+                weekendTextStyle: TextStyle(
+                  color: Colors.white.withOpacity(0.6),
+                ),
+                selectedTextStyle: const TextStyle(
+                  color: Colors.white,
+                ),
                 outsideDaysVisible: false,
-                selectedDecoration: BoxDecoration(
+                selectedDecoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.purple,
+                  color: Colors.blue,
                 ),
                 todayDecoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Color.fromRGBO(156, 39, 176, 0.5),
+                  color: Colors.blue.withOpacity(0.4),
                 ),
               ),
               selectedDayPredicate: (day) {
@@ -184,7 +233,7 @@ class _CalendarState extends State<Calendar> {
             ),
             const SizedBox(height: 10.0),
             Expanded(
-              child: ValueListenableBuilder<List<CalendarEvent>>(
+              child: ValueListenableBuilder<List<Event>>(
                 valueListenable: _selectedEvents,
                 builder: (context, value, _) {
                   return ListView.builder(
@@ -196,13 +245,18 @@ class _CalendarState extends State<Calendar> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          border: Border.all(),
+                          shape: BoxShape.rectangle,
+                          border: Border.all(color: Colors.blue),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: ListTile(
-                          onTap: () => print(""),
+                          // ignore: avoid_print
+                          onTap: () => print("${value[index]}"),
                           title: Text(
-                            "${value[index].title}",
+                            "${value[index]}",
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       );
