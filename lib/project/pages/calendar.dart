@@ -442,16 +442,17 @@ class _CalendarState extends State<Calendar> {
                   color: Colors.white.withOpacity(0.6),
                 ),
                 selectedTextStyle: const TextStyle(
-                  color: Colors.white,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
                 ),
                 outsideDaysVisible: false,
-                selectedDecoration: const BoxDecoration(
+                selectedDecoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.blue,
+                  color: Colors.blue.shade200,
                 ),
                 todayDecoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.blue.withOpacity(0.4),
+                  color: Colors.blue.withOpacity(0.2),
                 ),
               ),
               selectedDayPredicate: (day) {
@@ -492,17 +493,35 @@ class _CalendarState extends State<Calendar> {
                         ),
                         decoration: BoxDecoration(
                           shape: BoxShape.rectangle,
-                          border: Border.all(color: Colors.blue),
                           borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.blue.shade200,
+                            width: 3,
+                          ),
                         ),
-                        child: ListTile(
-                          // ignore: avoid_print
+                        child: InkWell(
+                          splashColor: Colors.white10,
+                          highlightColor: Colors.white10,
+                          borderRadius: BorderRadius.circular(12),
                           onTap: () => print(kEvents),
-                          title: Text(
-                            "${value[index]}",
-                            style: const TextStyle(
-                              color: Colors.white,
-                            ),
+                          child: ListBody(
+                            children: [
+                              ListTile(
+                                title: Text(
+                                  "${value[index].startString()} - ${value[index].endString()}",
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.2),
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  "${value[index].subject} - ${value[index].title}",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       );
