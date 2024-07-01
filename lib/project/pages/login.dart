@@ -47,29 +47,29 @@ class _LoginState extends State<Login> {
           TextFormField(
             controller: emailController,
             keyboardType: TextInputType.emailAddress,
-            cursorColor: Colors.blue,
+            cursorColor: Colors.blue.shade200,
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               fillColor: Colors.white,
               labelText: "Correo Electronico",
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(25.0),
-                borderSide: const BorderSide(
-                  color: Colors.blue,
+                borderSide: BorderSide(
+                  color: Colors.blue.shade200,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(25.0),
                 borderSide: BorderSide(
-                  color: Colors.blue.withOpacity(0.2),
+                  color: Colors.blue.shade200.withOpacity(0.2),
                   width: 1.5,
                 ),
               ),
-              prefixIcon: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
+              prefixIcon: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Icon(
                   Icons.email,
-                  color: Colors.blue,
+                  color: Colors.blue.shade200,
                 ),
               ),
             ),
@@ -80,29 +80,29 @@ class _LoginState extends State<Login> {
           TextFormField(
             controller: passwordController,
             obscureText: true,
-            cursorColor: Colors.blue,
+            cursorColor: Colors.blue.shade200,
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               fillColor: Colors.white,
               labelText: "Contraseña",
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(25.0),
-                borderSide: const BorderSide(
-                  color: Colors.blue,
+                borderSide: BorderSide(
+                  color: Colors.blue.shade200,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(25.0),
                 borderSide: BorderSide(
-                  color: Colors.blue.withOpacity(0.2),
+                  color: Colors.blue.shade200.withOpacity(0.2),
                   width: 1.5,
                 ),
               ),
-              prefixIcon: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
+              prefixIcon: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Icon(
                   Icons.lock,
-                  color: Colors.blue,
+                  color: Colors.blue.shade200,
                 ),
               ),
             ),
@@ -132,7 +132,7 @@ class _LoginState extends State<Login> {
             child: LoadingBtn(
               width: MediaQuery.of(context).size.width * 1,
               animate: true,
-              color: Colors.blue,
+              color: Colors.blue.shade200,
               height: 50,
               borderRadius: 50,
               loader: Container(
@@ -140,12 +140,12 @@ class _LoginState extends State<Login> {
                 width: 40,
                 height: 40,
                 child: const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
                 ),
               ),
               child: const Text(
                 "Ingresar",
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.black),
               ),
               onTap: (startLoading, stopLoading, btnState) async {
                 if (btnState == ButtonState.idle) {
@@ -172,20 +172,6 @@ class _LoginState extends State<Login> {
                 }
               },
             ),
-            // child: ElevatedButton(
-            //   onPressed: buttonEnabled ? null : _handleLogin,
-            //   style: ElevatedButton.styleFrom(
-            //     backgroundColor: Colors.blue,
-            //     padding: const EdgeInsets.symmetric(vertical: 20.0),
-            //   ),
-            //   child: const Text(
-            //     "Ingresar",
-            //     style: TextStyle(
-            //       color: Colors.white,
-            //       fontSize: 18.0,
-            //     ),
-            //   ),
-            // ),
           )
         ],
       ),

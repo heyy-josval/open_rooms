@@ -1,6 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:open_rooms/project/methods/method_logout.dart';
+import 'package:open_rooms/project/widgets/panel_item.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -10,61 +13,52 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Future<void> _handleLogout() async {
-    await FirebaseAuth.instance.signOut();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.pink,
-        elevation: 0,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              onPressed: () {
-                context.go("/calendar");
-              },
-              icon: const Icon(
-                Icons.calendar_today,
-                color: Colors.white,
-              ),
-            ),
-            const Text(
-              "Open Rooms",
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                context.go("/profile");
-              },
-              icon: const Icon(
-                Icons.person,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-      ),
+      backgroundColor: Colors.black,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _handleLogout,
-                child: const Text(
-                  "Cerrar Sesión",
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Panel principal",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
+              ],
+            ),
+            const SizedBox(height: 20.0),
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2,
+                children: [
+                  PanelItem(
+                    title: "Reservas",
+                    icon: Icons.calendar_today,
+                    action: () => context.go("/calendar"),
+                  ),
+                  PanelItem(
+                    title: "Perfil",
+                    icon: Icons.account_circle,
+                    action: () => context.go("/profile"),
+                  ),
+                  PanelItem(
+                    title: "Laboratorios",
+                    icon: Icons.door_sliding,
+                    action: () {},
+                  ),
+                ],
               ),
-            )
+            ),
           ],
         ),
       ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:open_rooms/project/methods/method_logout.dart';
+import 'package:open_rooms/project/widgets/custom_button.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -11,10 +13,27 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        title: const Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              "Perfil",
+            ),
+          ],
+        ),
+      ),
+      backgroundColor: Colors.black,
       body: Container(
         child: Center(
-          child: Text("Profile"),
+          child: CustomButton(
+              bg: Colors.blue.shade200,
+              fg: Colors.black,
+              action: methodLogout,
+              title: "Cerrar sesión"),
         ),
       ),
     );
