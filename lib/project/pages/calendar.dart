@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:open_rooms/project/utils.dart';
 import 'package:open_rooms/project/widgets/custom_button.dart';
 import 'package:open_rooms/project/widgets/custom_text_field.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Calendar extends StatefulWidget {
-  const Calendar({super.key});
+  const Calendar({
+    super.key,
+    required this.roomId,
+  });
+
+  final String? roomId;
 
   @override
   State<Calendar> createState() => _CalendarState();
@@ -15,7 +19,16 @@ class Calendar extends StatefulWidget {
 class _CalendarState extends State<Calendar> {
   late final ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.week;
-  DateTime _focusedDay = DateTime.now();
+  DateTime _focusedDay = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+    0,
+    0,
+    0,
+    0,
+    0,
+  );
   DateTime? _selectedDay;
   late TimeOfDay _startTime;
   late TimeOfDay _endTime;
@@ -27,6 +40,7 @@ class _CalendarState extends State<Calendar> {
   @override
   void initState() {
     super.initState();
+    print(widget.roomId);
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
     _startTime = TimeOfDay(

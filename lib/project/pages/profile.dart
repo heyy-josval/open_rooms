@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:open_rooms/project/methods/method_logout.dart';
 import 'package:open_rooms/project/widgets/custom_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -10,6 +11,14 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  User? currentUser = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    print(currentUser);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

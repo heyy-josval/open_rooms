@@ -4,6 +4,7 @@ import 'package:open_rooms/project/pages/calendar.dart';
 import 'package:open_rooms/project/pages/door.dart';
 import 'package:open_rooms/project/pages/error.dart';
 import 'package:open_rooms/project/pages/home.dart';
+import 'package:open_rooms/project/pages/labs.dart';
 import 'package:open_rooms/project/pages/profile.dart';
 import 'package:open_rooms/project/routes/app_route_constants.dart';
 
@@ -32,9 +33,18 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
+          path: MyAppRouteConstants.labsRouteName,
+          name: MyAppRouteConstants.labsRouteName,
+          builder: (context, state) => Labs(),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
           path: MyAppRouteConstants.calendarRouteName,
           name: MyAppRouteConstants.calendarRouteName,
-          builder: (context, state) => Calendar(),
+          builder: (context, state) {
+            final roomId = state.pathParameters['rid']!;
+            return Calendar(roomId: roomId);
+          },
         )
       ],
     ),
