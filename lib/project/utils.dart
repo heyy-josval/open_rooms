@@ -1,6 +1,11 @@
 // Copyright 2019 Aleksander Woźniak
 // SPDX-License-Identifier: Apache-2.0
 
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
+import 'package:open_rooms/project/classes/date_day.dart';
+import 'package:open_rooms/project/classes/event.dart';
+
 /// Returns a list of [DateTime] objects from [first] to [last], inclusive.
 List<DateTime> daysInRange(DateTime first, DateTime last) {
   final dayCount = last.difference(first).inDays + 1;
@@ -37,4 +42,37 @@ DateTime roundEndTime(DateTime dateTime) {
     roundedHours,
     0,
   );
+}
+
+DateDay? parseDateDay(DataSnapshot child) {
+  try {
+    final year = int.parse(child.child("year").value.toString());
+    final month = int.parse(child.child("month").value.toString());
+    final day = int.parse(child.child("day").value.toString());
+    return DateDay(year, month, day);
+  } catch (e) {
+    print('Error parsing DateDay: $e');
+    return null;
+  }
+}
+
+Event? parseEvent(DataSnapshot child) {
+  try {
+    final startTime = TimeOfDay(
+      hour: int.parse(child.child("start_hour").value.toString()),
+      minute: int.parse(child.child("start_minute").value.toString()),
+    );
+    final endTime = TimeOfDay(
+      hour: int.parse(child.child("end_hour").value.toString()),
+      minute: int.parse(child.child("end_minute").value.toString()),
+    );
+    final title = child.child("title").value.toString();
+    final subject = child.child("subject").value.toString();
+    final teacherUID = child.child("teacher_uid").value.toString();
+
+    return Event(title, subject, teacherUID, startTime, endTime);
+  } catch (e) {
+    print('Error parsing Event: $e');
+    return null;
+  }
 }

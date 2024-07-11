@@ -1,5 +1,9 @@
+import 'dart:collection';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:open_rooms/project/classes/date_day.dart';
 import 'package:open_rooms/project/classes/event.dart';
 import 'package:open_rooms/project/classes/events.dart';
 import 'package:open_rooms/project/utils.dart';
@@ -20,7 +24,8 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
-  User? currentUserUID = FirebaseAuth.instance.currentUser;
+  String? roomId;
+  String? currentUserUID = FirebaseAuth.instance.currentUser?.uid;
   late final ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime _focusedDay = DateTime(
@@ -43,7 +48,29 @@ class _CalendarState extends State<Calendar> {
   @override
   void initState() {
     super.initState();
-    print(widget.roomId);
+    setState(() {
+      roomId = widget.roomId;
+    });
+    DatabaseReference reservationsRef = FirebaseDatabase.instance.ref(
+      'labs/$roomId/reservations',
+    );
+    reservationsRef.onValue.listen((DatabaseEvent event) {
+      final Map<DateDay, List<Event>> tempEvents = {};
+      for (final child in event.snapshot.children) {
+        final dateDay = parseDateDay(child);
+        final event = parseEvent(child);
+
+        if (dateDay != null && event != null) {
+          tempEvents.putIfAbsent(dateDay, () => []).add(event);
+        }
+
+        setState(() {
+          events = LinkedHashMap<DateDay, List<Event>>.from(tempEvents);
+        });
+        print(events);
+        _selectedEvents.value = _getEventsForDay(_selectedDay!);
+      }
+    });
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
     _startTime = TimeOfDay(
@@ -56,28 +83,40 @@ class _CalendarState extends State<Calendar> {
     );
   }
 
+  @override
+  void dispose() {
+    _selectedEvents.dispose();
+    super.dispose();
+  }
+
   List<Event> _getEventsForDay(DateTime day) {
-    return events[day] ?? [];
+    final dateDay = DateDay(day.year, day.month, day.day);
+    return events[dateDay] ?? [];
   }
 
   void _addEvent() {
-    final newEvent = Event(
-      _eventTitleController.text,
-      _eventSubjectController.text,
-      currentUserUID!.uid,
-      _startTime,
-      _endTime,
+    //TODO: añadir el pin que desbloquea la puerta, como un input al añadir y que el usuario decida su pin
+    DatabaseReference reservationsRef = FirebaseDatabase.instance.ref(
+      'labs/$roomId/reservations',
     );
+    DatabaseReference newReservationRef = reservationsRef.push();
 
-    if (events[_selectedDay] != null) {
-      events[_selectedDay]!.add(newEvent);
-    } else {
-      events[_selectedDay!] = [newEvent];
-    }
-
-    setState(() {
-      _selectedEvents.value = _getEventsForDay(_selectedDay!);
+    newReservationRef.set({
+      "day": _selectedDay?.day,
+      "month": _selectedDay?.month,
+      "year": _selectedDay?.year,
+      "start_hour": _startTime.hour,
+      "start_minute": _startTime.minute,
+      "end_hour": _endTime.hour,
+      "end_minute": _endTime.minute,
+      "title": _eventTitleController.text,
+      "subject": _eventSubjectController.text,
+      "teacher_uid": currentUserUID,
+      "open": false,
     });
+    // setState(() {
+    //   _selectedEvents.value = _getEventsForDay(_selectedDay!);
+    // });
 
     _eventTitleController.clear();
     _eventSubjectController.clear();
@@ -217,7 +256,7 @@ class _CalendarState extends State<Calendar> {
                                           ? Colors.blue
                                           : Colors.blue.withOpacity(0.1),
                                 ),
-                                dayPeriodBorderSide: BorderSide(width: 0),
+                                dayPeriodBorderSide: const BorderSide(width: 0),
                                 dayPeriodTextColor:
                                     WidgetStateColor.resolveWith(
                                   (states) =>

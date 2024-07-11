@@ -7,8 +7,16 @@ class Event {
   final String teacherUID;
   final TimeOfDay start;
   final TimeOfDay end;
+  final bool? open;
 
-  const Event(this.title, this.subject, this.teacherUID, this.start, this.end);
+  const Event(
+    this.title,
+    this.subject,
+    this.teacherUID,
+    this.start,
+    this.end, {
+    this.open = false,
+  });
 
   Map<String, dynamic> toMap() {
     return {

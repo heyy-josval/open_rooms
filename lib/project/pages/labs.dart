@@ -20,6 +20,7 @@ class _LabsState extends State<Labs> {
     labsRef.onValue.listen((DatabaseEvent event) {
       List<DataSnapshot> result = [];
       for (final child in event.snapshot.children) {
+        print(child);
         result.add(child);
       }
       setState(() {
