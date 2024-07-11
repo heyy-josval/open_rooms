@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:open_rooms/project/classes/event.dart';
+import 'package:open_rooms/project/classes/events.dart';
 import 'package:open_rooms/project/utils.dart';
 import 'package:open_rooms/project/widgets/custom_button.dart';
 import 'package:open_rooms/project/widgets/custom_text_field.dart';
@@ -17,14 +20,15 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
+  User? currentUserUID = FirebaseAuth.instance.currentUser;
   late final ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime _focusedDay = DateTime(
     DateTime.now().year,
     DateTime.now().month,
     DateTime.now().day,
-    0,
-    0,
+    DateTime.now().hour,
+    DateTime.now().minute,
     0,
     0,
     0,
@@ -34,7 +38,6 @@ class _CalendarState extends State<Calendar> {
   late TimeOfDay _endTime;
 
   final TextEditingController _eventTitleController = TextEditingController();
-  final TextEditingController _eventTeacherController = TextEditingController();
   final TextEditingController _eventSubjectController = TextEditingController();
 
   @override
@@ -54,22 +57,22 @@ class _CalendarState extends State<Calendar> {
   }
 
   List<Event> _getEventsForDay(DateTime day) {
-    return kEvents[day] ?? [];
+    return events[day] ?? [];
   }
 
   void _addEvent() {
     final newEvent = Event(
       _eventTitleController.text,
-      _eventTeacherController.text,
       _eventSubjectController.text,
+      currentUserUID!.uid,
       _startTime,
       _endTime,
     );
 
-    if (kEvents[_selectedDay] != null) {
-      kEvents[_selectedDay]!.add(newEvent);
+    if (events[_selectedDay] != null) {
+      events[_selectedDay]!.add(newEvent);
     } else {
-      kEvents[_selectedDay!] = [newEvent];
+      events[_selectedDay!] = [newEvent];
     }
 
     setState(() {
@@ -77,7 +80,6 @@ class _CalendarState extends State<Calendar> {
     });
 
     _eventTitleController.clear();
-    _eventTeacherController.clear();
     _eventSubjectController.clear();
   }
 
@@ -155,14 +157,6 @@ class _CalendarState extends State<Calendar> {
                 controller: _eventTitleController,
                 label: "Título",
                 icon: Icons.title,
-              ),
-              const SizedBox(
-                height: 10.0,
-              ),
-              CustomTextField(
-                controller: _eventTeacherController,
-                label: "Docente a cargo",
-                icon: Icons.co_present,
               ),
               const SizedBox(
                 height: 10.0,
@@ -517,7 +511,7 @@ class _CalendarState extends State<Calendar> {
                           splashColor: Colors.white10,
                           highlightColor: Colors.white10,
                           borderRadius: BorderRadius.circular(12),
-                          onTap: () => print(kEvents),
+                          onTap: () => print(events),
                           child: ListBody(
                             children: [
                               ListTile(

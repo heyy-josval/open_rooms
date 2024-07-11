@@ -16,7 +16,7 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    print(currentUser);
+    print(currentUser?.uid);
   }
 
   @override

@@ -1,3 +1,4 @@
 {
-  "cmake.sourceDirectory": "C:/Users/Administrator/code/open_rooms/windows"
+  "cmake.sourceDirectory": "C:/Users/Administrator/code/open_rooms/windows",
+  "cmake.configureOnOpen": false
 }

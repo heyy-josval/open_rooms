@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:open_rooms/project/widgets/panel_item.dart';
@@ -10,6 +11,23 @@ class Labs extends StatefulWidget {
 }
 
 class _LabsState extends State<Labs> {
+  List<DataSnapshot>? labs;
+
+  @override
+  void initState() {
+    super.initState();
+    DatabaseReference labsRef = FirebaseDatabase.instance.ref('labs');
+    labsRef.onValue.listen((DatabaseEvent event) {
+      List<DataSnapshot> result = [];
+      for (final child in event.snapshot.children) {
+        result.add(child);
+      }
+      setState(() {
+        labs = result;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,22 +38,30 @@ class _LabsState extends State<Labs> {
       backgroundColor: Colors.black,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
+        child: labs == null
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.blue,
+                ),
+              )
+            : Column(
                 children: [
-                  PanelItem(
-                    title: "Lab. de informatica",
-                    icon: Icons.meeting_room_rounded,
-                    action: () => context.go("/calendar/id123"),
+                  Expanded(
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      children: labs!.map(
+                        (lab) {
+                          return PanelItem(
+                            title: lab.child("title").value.toString(),
+                            icon: Icons.meeting_room_rounded,
+                            action: () => context.push("/calendar/${lab.key}"),
+                          );
+                        },
+                      ).toList(),
+                    ),
                   ),
                 ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
