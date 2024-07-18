@@ -25,7 +25,6 @@ class _DoorState extends State<Door> {
   List<DataSnapshot>? labs;
   List<Object>? labsFilter;
   Map<dynamic, dynamic>? currentReservation;
-  String? currentID;
   String? currentLabID;
 
   late DateTime now;
@@ -42,6 +41,7 @@ class _DoorState extends State<Door> {
       now = DateTime.now();
       currentHour = now.hour;
       currentMinute = now.minute;
+      bool? currentBool = false;
       for (final child in event.snapshot.children) {
         result.add(child);
         var reservations =
@@ -68,7 +68,7 @@ class _DoorState extends State<Door> {
                 if (now.isAfter(startTime) && now.isBefore(endTime)) {
                   currentReservation = value;
                   currentLabID = child.key;
-                  currentID = key;
+                  currentBool = child.child("open").value as bool?;
                 }
               }
             }
@@ -79,33 +79,21 @@ class _DoorState extends State<Door> {
         loading = false;
         labs = result;
         labsFilter = filteredReservations;
+        isOpen = currentBool!;
 
-        if (currentReservation == null ||
-            !now.isAfter(DateTime(
-              now.year,
-              now.month,
-              now.day,
-              currentReservation?['start_hour'] ?? 0,
-              currentReservation?['start_minute'] ?? 0,
-            )) ||
-            !now.isBefore(DateTime(
-              now.year,
-              now.month,
-              now.day,
-              currentReservation?['end_hour'] ?? 0,
-              currentReservation?['end_minute'] ?? 0,
-            ))) {
-          currentReservation = null;
+        if (currentReservation != null) {
+          start = TimeOfDay(
+            hour: currentReservation?['start_hour'] ?? 0,
+            minute: currentReservation?['start_minute'] ?? 0,
+          );
+          end = TimeOfDay(
+            hour: currentReservation?['end_hour'] ?? 0,
+            minute: currentReservation?['end_minute'] ?? 0,
+          );
+        } else {
+          start = null;
+          end = null;
         }
-        start = TimeOfDay(
-          hour: currentReservation?["start_hour"],
-          minute: currentReservation?["start_minute"],
-        );
-        end = TimeOfDay(
-          hour: currentReservation?["end_hour"],
-          minute: currentReservation?["end_minute"],
-        );
-        isOpen = currentReservation?["open"];
       });
       print(currentReservation.toString());
     });
@@ -127,11 +115,11 @@ class _DoorState extends State<Door> {
   void handleDoor() async {
     if (pinController.text == currentReservation?["pin"]) {
       DatabaseReference ref = FirebaseDatabase.instance.ref(
-        "labs/$currentLabID/reservations/$currentID",
+        "labs/$currentLabID",
       );
 
       await ref.update({
-        "open": !isOpen,
+        "open": !isOpen!,
       });
     } else {
       setState(() {

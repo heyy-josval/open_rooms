@@ -116,7 +116,6 @@ class _CalendarState extends State<Calendar> {
       "title": _eventTitleController.text,
       "subject": _eventSubjectController.text,
       "teacher_uid": currentUserUID,
-      "open": false,
       "pin": _eventPinController.text,
     });
     // setState(() {
