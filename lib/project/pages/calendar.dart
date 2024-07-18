@@ -100,7 +100,6 @@ class _CalendarState extends State<Calendar> {
   }
 
   void _addEvent() {
-    //TODO: añadir el pin que desbloquea la puerta, como un input al añadir y que el usuario decida su pin
     DatabaseReference reservationsRef = FirebaseDatabase.instance.ref(
       'labs/$roomId/reservations',
     );
