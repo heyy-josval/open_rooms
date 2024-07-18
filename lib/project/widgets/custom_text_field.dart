@@ -6,15 +6,21 @@ class CustomTextField extends StatelessWidget {
     required this.controller,
     required this.label,
     required this.icon,
+    this.size,
+    this.type,
   });
 
   final TextEditingController controller;
   final String label;
   final IconData icon;
+  final int? size;
+  final TextInputType? type;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      keyboardType: type ?? TextInputType.text,
+      maxLength: size ?? 20,
       controller: controller,
       cursorColor: Colors.white,
       style: const TextStyle(color: Colors.white),

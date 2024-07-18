@@ -44,6 +44,7 @@ class _CalendarState extends State<Calendar> {
 
   final TextEditingController _eventTitleController = TextEditingController();
   final TextEditingController _eventSubjectController = TextEditingController();
+  final TextEditingController _eventPinController = TextEditingController();
 
   @override
   void initState() {
@@ -67,12 +68,16 @@ class _CalendarState extends State<Calendar> {
         setState(() {
           events = LinkedHashMap<DateDay, List<Event>>.from(tempEvents);
         });
-        print(events);
-        _selectedEvents.value = _getEventsForDay(_selectedDay!);
+        // print(events);
       }
     });
     _selectedDay = _focusedDay;
-    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+    if (_selectedDay != null) {
+      _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+    } else {
+      // Handle the case when _selectedDay is null
+      _selectedEvents = ValueNotifier([]);
+    }
     _startTime = TimeOfDay(
       hour: roundStartTime(_focusedDay).hour,
       minute: roundStartTime(_focusedDay).minute,
@@ -113,6 +118,7 @@ class _CalendarState extends State<Calendar> {
       "subject": _eventSubjectController.text,
       "teacher_uid": currentUserUID,
       "open": false,
+      "pin": _eventPinController.text,
     });
     // setState(() {
     //   _selectedEvents.value = _getEventsForDay(_selectedDay!);
@@ -204,6 +210,16 @@ class _CalendarState extends State<Calendar> {
                 controller: _eventSubjectController,
                 label: "Asignatura",
                 icon: Icons.book,
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              CustomTextField(
+                type: TextInputType.number,
+                size: 4,
+                controller: _eventPinController,
+                label: "PIN",
+                icon: Icons.pin,
               ),
               const SizedBox(
                 height: 10.0,
