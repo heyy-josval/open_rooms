@@ -25,7 +25,6 @@
 
 - [Descripción](#descripción)
 - [Características](#características)
-- [Capturas de Pantalla](#capturas-de-pantalla)
 - [Prerrequisitos](#prerrequisitos)
 - [Instalación](#instalación)
 - [Configuración de Firebase](#configuración-de-firebase)
@@ -91,34 +90,6 @@
 - Sistema de rutas declarativas con `go_router`
 - Navegación fluida entre pantallas
 - Protección de rutas según estado de autenticación
-
----
-
-## Capturas de Pantalla
-
-### Pantalla de Login
-<img src="screenshots/login.png" width="300" alt="Pantalla de Login">
-*Formulario de autenticación con campos de email y contraseña*
-
-### Dashboard / Home
-<img src="screenshots/home.png" width="300" alt="Pantalla Principal">
-*Panel principal con acceso rápido a las funcionalidades principales*
-
-### Lista de Laboratorios
-<img src="screenshots/labs.png" width="300" alt="Lista de Laboratorios">
-*Grid de laboratorios disponibles con indicadores de estado*
-
-### Calendario de Reservas
-<img src="screenshots/calendar.png" width="300" alt="Calendario">
-*Vista de calendario con eventos y posibilidad de crear nuevas reservas*
-
-### Control de Puerta
-<img src="screenshots/door.png" width="300" alt="Control de Puerta">
-*Interfaz de acceso mediante PIN para abrir/cerrar laboratorios*
-
-### Perfil de Usuario
-<img src="screenshots/profile.png" width="300" alt="Perfil">
-*Panel de perfil de usuario con opción de cerrar sesión*
 
 ---
 
@@ -387,7 +358,6 @@ open_rooms/
 │           └── panel_item.dart      # Item de panel grid
 ├── test/                             # Pruebas unitarias y widget
 │   └── widget_test.dart
-├── screenshots/                      # Capturas de pantalla
 ├── pubspec.yaml                      # Dependencias del proyecto
 ├── analysis_options.yaml             # Configuración de análisis
 ├── firebase.json                     # Configuración Firebase Hosting
